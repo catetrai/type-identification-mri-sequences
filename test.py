@@ -34,8 +34,8 @@ def parse_args():
 		help = 'If specified, "Other" class is not considered.')
 	parser.add_argument('--net', dest='net', type = str, default = 'resnet18',
 		help = 'Network architecture to be used.')
-	parser.add_argument('--log-level', type=str,
-		choices=("debug", "info", "warn", "error"))
+	parser.add_argument('--debug', action="store_true",
+		help="Enable debug logging")
 	return parser.parse_args()
 
 def fix_random_seeds():
@@ -53,6 +53,8 @@ if __name__ == '__main__':
 	tridim = args.tridim
 	consider_other_class = not args.no_other
 	architecture = args.net
+	if args.debug:
+		logging.getLogger().setLevel("DEBUG")
 	
 	assert(architecture in ['resnet18', 'alexnet', 'vgg', 'squeezenet', 'mobilenet'])
 
