@@ -71,7 +71,7 @@ if __name__ == '__main__':
 	start_time = time.time()
 		
 	#test
-	net.load_state_dict(torch.load(os.path.join('models', model_file)))
+	net.load_state_dict(torch.load(os.path.join('models', model_file), map_location=torch.device('cpu')))
 	net.eval()
 	correct = 0
 	total = 0
@@ -86,18 +86,18 @@ if __name__ == '__main__':
 			if tridim:
 				pixel_data = pixel_data.view(-1, 1, 10, 200, 200)
 
-			outputs = net(pixel_data.cuda())
+			outputs = net(pixel_data.cpu())
 			_, predicted = torch.max(outputs.data, 1)
 
 			total += label.size(0)
-			correct += (predicted == label.cuda()).sum().item()
+			correct += (predicted == label.cpu()).sum().item()
 			total_per_class[label_as_num] += label.size(0)
-			correct_per_class[label_as_num] += (predicted == label.cuda()).sum().item()
+			correct_per_class[label_as_num] += (predicted == label.cpu()).sum().item()
 			
 			actual_classes.append(classes[label_as_num])
 			predicted_classes.append(classes[predicted.cpu().numpy()[0]])
 			
-			if predicted != label.cuda():
+			if predicted != label.cpu():
 				wrong_predictions.append((path[0], classes[label.numpy()[0]], classes[predicted.cpu().numpy()[0]]))
 				
 			print('Tested', i + 1, 'of', n_test_files, 'files.')
