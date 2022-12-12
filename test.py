@@ -4,17 +4,10 @@ import os
 import argparse
 import numpy
 import random
-import cv2
 import time
-import matplotlib.pyplot as plt
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import torch.utils.data as data
-import torchvision
-
-from pandas_ml import ConfusionMatrix
 
 from models import select_net
 from time_util import time_format

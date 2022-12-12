@@ -1,23 +1,15 @@
 import logging
 import os
-import pandas
 import torch
-import nibabel
 import numpy
 import random
 import cv2
 import SimpleITK as sitk
 import torchvision.transforms.functional as TF
-import glob
-import operator
 import time
 
-from math import floor, ceil
 from torch.utils.data import Dataset
 from imgaug import augmenters as aug
-from dicom2nifti import dicom_series_to_nifti
-from dicom2nifti.image_reorientation import reorient_image, _reorient_3d
-from dicom2nifti.image_volume import load, ImageVolume
 from SimpleITK import ImageFileReader, ImageSeriesReader
 from time_util import time_format
 
