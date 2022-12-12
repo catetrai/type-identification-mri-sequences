@@ -22,8 +22,9 @@ from SimpleITK import ImageFileReader, ImageSeriesReader
 from time_util import time_format
 
 class MedicalDataset(Dataset):
-    def __init__(self, data_csv, min_slices = 10, consider_other_class = True, test = False):
-        self.images = pandas.read_csv(data_csv)
+    def __init__(self, image_paths, min_slices = 10, consider_other_class =
+    True, test = False):
+        self.images = image_paths
         self.min_slices = min_slices
         self.consider_other_class = consider_other_class
         self.is_train = not test
@@ -37,12 +38,8 @@ class MedicalDataset(Dataset):
         start = time.time()
         logging.debug('Starting loading data...')
         #print(self.images), exit()
-        for i, (image_path, label) in self.images.iterrows():
-            image_path = os.path.join(os.getcwd(), image_path)
-            if not self.consider_other_class and label == 4:
-                logging.debug('DISCARDED: "Other" class -', image_path)
-                continue
-            logging.debug('Loading', image_path)
+        for i, image_path in self.images:
+            logging.debug('Loading ', image_path)
             if os.path.isdir(image_path):
                 reader = ImageSeriesReader()
                 sorted_file_names = reader.GetGDCMSeriesFileNames(image_path)
@@ -99,7 +96,9 @@ class MedicalDataset(Dataset):
             #    new_pixel_data.append(slice)
             #pixel_data = numpy.array(new_pixel_data)
             assert(pixel_data.shape == (min_slices, 200, 200))
-            data.append((pixel_data, label))
+
+            # Append dummy label '0'
+            data.append((pixel_data, 0))
                 
             logging.debug('Loaded', i + 1, '/', len(self.images), '' if
             self.consider_other_class else '(counting discarded).')
@@ -242,7 +241,7 @@ class MedicalDataset(Dataset):
     
     def __getitem__(self, idx):
         image, label = self.loaded_data[idx]
-        path, _ = self.images.iloc[idx]
+        path = self.images[idx]
         #print(image.shape)
         #if self.is_train:
         first_slice_idx = numpy.random.randint(16 - self.min_slices + 1)

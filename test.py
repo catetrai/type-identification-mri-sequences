@@ -22,8 +22,8 @@ from MedicalDataset import MedicalDataset
 
 def parse_args():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-t', dest='test_data_path', type = str, required = True,
-		help = 'Path containing data to be tested.')
+	parser.add_argument('-t', dest='test_data_path', nargs="+", required=True,
+		help = 'Paths containing data to be tested.')
 	parser.add_argument('-m', dest='model_file', type = str, required = True,
 		help = 'Name of the trained model file.')
 	parser.add_argument('-sl', dest='slices', type = int, default = 10,
@@ -98,40 +98,18 @@ if __name__ == '__main__':
 			
 			actual_classes.append(classes[label_as_num])
 			predicted_classes.append(classes[predicted.cpu().numpy()[0]])
+			predicted_label = classes[predicted.cpu().numpy()[0]]
+
+			# Actual script output to stdout
+			print(f"{path}\t{predicted_label}")
 			
 			if predicted != label.cpu():
 				wrong_predictions.append((path[0], classes[label.numpy()[0]], classes[predicted.cpu().numpy()[0]]))
 				
-	micro_accuracy = 100 * correct / total
-	macro_accuracy = 0
-	sampled_classes = 0
-	for i in range(len(classes)):
-		 if total_per_class[i] > 0:
-			  macro_accuracy += correct_per_class[i]/total_per_class[i]
-			  sampled_classes += 1
-	macro_accuracy = 100 * macro_accuracy/sampled_classes
-	 
-	accuracy = macro_accuracy
-	
-	confusion_matrix = ConfusionMatrix(actual_classes, predicted_classes)
-			
-	print()
-	print('Macro-accuracy:', str(accuracy) + '%. Details (considering MICRO-accuracy):')
-	confusion_matrix.print_stats()
-	
 			logging.debug('Tested', i + 1, 'of', n_test_files, 'files.')
 
 	#time
 	end_time = time.time()
 	elapsed_time = time_format(end_time - start_time)
-	os.makedirs(os.path.join('results', 'test'), exist_ok = True)
-	with open(os.path.join('results', 'test', test_data_path.replace(os.sep, '_').replace('.', '_') + '--' + model_file.replace('.pth', '.txt')), 'w') as results_txt:
-		results_txt.write('Macro-accuracy: ' + str(accuracy) + '%. Details (considering MICRO-accuracy):\n\n')
-		results_txt.write(str(confusion_matrix.stats()))
-		results_txt.write('\n\nWRONG PREDICTIONS:\n\n')
-		for wrong_prediction in wrong_predictions:
-			path, label, prediction = wrong_prediction
-			results_txt.write(path + ' is ' + label+ ' and was predicted as ' + prediction + '\n')
-		results_txt.write('\n\nTime: ' + elapsed_time)
 	logging.debug('Testing elapsed time:', elapsed_time)
 
