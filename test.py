@@ -23,7 +23,7 @@ from MedicalDataset import MedicalDataset
 def parse_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-t', dest='test_data_path', nargs="+", required=True,
-		help = 'Paths containing data to be tested.')
+		help = 'Paths to directories containing DICOM files to be tested.')
 	parser.add_argument('-m', dest='model_file', type = str, required = True,
 		help = 'Name of the trained model file.')
 	parser.add_argument('-sl', dest='slices', type = int, default = 10,
