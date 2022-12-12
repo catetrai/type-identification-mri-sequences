@@ -38,7 +38,7 @@ class MedicalDataset(Dataset):
         start = time.time()
         logging.debug('Starting loading data...')
         #print(self.images), exit()
-        for i, image_path in self.images:
+        for i, image_path in enumerate(self.images):
             logging.debug('Loading ', image_path)
             if os.path.isdir(image_path):
                 reader = ImageSeriesReader()
