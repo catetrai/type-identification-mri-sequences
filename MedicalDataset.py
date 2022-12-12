@@ -39,7 +39,7 @@ class MedicalDataset(Dataset):
         logging.debug('Starting loading data...')
         #print(self.images), exit()
         for i, image_path in enumerate(self.images):
-            logging.debug('Loading ', image_path)
+            logging.debug('Loading %s', image_path)
             if os.path.isdir(image_path):
                 reader = ImageSeriesReader()
                 sorted_file_names = reader.GetGDCMSeriesFileNames(image_path)
@@ -100,9 +100,11 @@ class MedicalDataset(Dataset):
             # Append dummy label '0'
             data.append((pixel_data, 0))
                 
-            logging.debug('Loaded', i + 1, '/', len(self.images), '' if
-            self.consider_other_class else '(counting discarded).')
-        logging.debug('\nLoading time:', time_format(time.time() - start))
+            logging.debug(
+                'Loaded %s/%s' + ('' if self.consider_other_class
+                                   else ' (counting discarded).'),
+                i + 1, len(self.images))
+        logging.debug('Loading time: %s', time_format(time.time() - start))
         return data
     
     def rotate(self, image):

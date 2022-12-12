@@ -34,7 +34,7 @@ def parse_args():
 		help = 'If specified, "Other" class is not considered.')
 	parser.add_argument('--net', dest='net', type = str, default = 'resnet18',
 		help = 'Network architecture to be used.')
-	parser.add_argument('--debug', action="store_true",
+	parser.add_argument('-d', '--debug', action="store_true",
 		help="Enable debug logging")
 	return parser.parse_args()
 
@@ -54,8 +54,9 @@ if __name__ == '__main__':
 	consider_other_class = not args.no_other
 	architecture = args.net
 	if args.debug:
-		logging.getLogger().setLevel("DEBUG")
-	
+		logging.basicConfig(format="%(asctime)s [%(levelname)-8s] %(message)s",
+							level=logging.DEBUG)
+
 	assert(architecture in ['resnet18', 'alexnet', 'vgg', 'squeezenet', 'mobilenet'])
 
 	fix_random_seeds()
@@ -108,10 +109,10 @@ if __name__ == '__main__':
 			if predicted != label.cpu():
 				wrong_predictions.append((path[0], classes[label.numpy()[0]], classes[predicted.cpu().numpy()[0]]))
 				
-			logging.debug('Tested', i + 1, 'of', n_test_files, 'files.')
+			logging.debug('Tested %s of %s files', i + 1, n_test_files)
 
 	#time
 	end_time = time.time()
 	elapsed_time = time_format(end_time - start_time)
-	logging.debug('Testing elapsed time:', elapsed_time)
+	logging.debug('Testing elapsed time: %s', elapsed_time)
 
