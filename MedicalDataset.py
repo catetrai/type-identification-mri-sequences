@@ -1,3 +1,4 @@
+import logging
 import os
 import pandas
 import torch
@@ -28,19 +29,20 @@ class MedicalDataset(Dataset):
         self.is_train = not test
         self.loaded_data = self.load_data()
         if not self.consider_other_class:
-            print('Actually loaded:', self.__len__(), '("Other" class discarded)')
+            logging.debug('Actually loaded:', self.__len__(),
+                          '("Other" class discarded)')
     
     def load_data(self):
         data = []
         start = time.time()
-        print('Starting loading data...')
+        logging.debug('Starting loading data...')
         #print(self.images), exit()
         for i, (image_path, label) in self.images.iterrows():
             image_path = os.path.join(os.getcwd(), image_path)
             if not self.consider_other_class and label == 4:
-                print('DISCARDED: "Other" class -', image_path)
+                logging.debug('DISCARDED: "Other" class -', image_path)
                 continue
-            print('Loading', image_path)
+            logging.debug('Loading', image_path)
             if os.path.isdir(image_path):
                 reader = ImageSeriesReader()
                 sorted_file_names = reader.GetGDCMSeriesFileNames(image_path)
@@ -99,8 +101,9 @@ class MedicalDataset(Dataset):
             assert(pixel_data.shape == (min_slices, 200, 200))
             data.append((pixel_data, label))
                 
-            print('Loaded', i + 1, '/', len(self.images), '' if self.consider_other_class else '(counting discarded).')
-        print('\nLoading time:', time_format(time.time() - start))
+            logging.debug('Loaded', i + 1, '/', len(self.images), '' if
+            self.consider_other_class else '(counting discarded).')
+        logging.debug('\nLoading time:', time_format(time.time() - start))
         return data
     
     def rotate(self, image):

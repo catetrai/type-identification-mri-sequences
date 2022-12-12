@@ -1,5 +1,5 @@
 #scikit-learn must be at version <= 0.17
-
+import logging
 import os
 import argparse
 import numpy
@@ -34,6 +34,8 @@ def parse_args():
 		help = 'If specified, "Other" class is not considered.')
 	parser.add_argument('--net', dest='net', type = str, default = 'resnet18',
 		help = 'Network architecture to be used.')
+	parser.add_argument('--log-level', type=str,
+		choices=("debug", "info", "warn", "error"))
 	return parser.parse_args()
 
 def fix_random_seeds():
@@ -100,8 +102,6 @@ if __name__ == '__main__':
 			if predicted != label.cpu():
 				wrong_predictions.append((path[0], classes[label.numpy()[0]], classes[predicted.cpu().numpy()[0]]))
 				
-			print('Tested', i + 1, 'of', n_test_files, 'files.')
-			
 	micro_accuracy = 100 * correct / total
 	macro_accuracy = 0
 	sampled_classes = 0
@@ -119,12 +119,11 @@ if __name__ == '__main__':
 	print('Macro-accuracy:', str(accuracy) + '%. Details (considering MICRO-accuracy):')
 	confusion_matrix.print_stats()
 	
+			logging.debug('Tested', i + 1, 'of', n_test_files, 'files.')
+
 	#time
-	print()
 	end_time = time.time()
 	elapsed_time = time_format(end_time - start_time)
-	print('Testing elapsed time:', elapsed_time)
-	
 	os.makedirs(os.path.join('results', 'test'), exist_ok = True)
 	with open(os.path.join('results', 'test', test_data_path.replace(os.sep, '_').replace('.', '_') + '--' + model_file.replace('.pth', '.txt')), 'w') as results_txt:
 		results_txt.write('Macro-accuracy: ' + str(accuracy) + '%. Details (considering MICRO-accuracy):\n\n')
@@ -134,3 +133,5 @@ if __name__ == '__main__':
 			path, label, prediction = wrong_prediction
 			results_txt.write(path + ' is ' + label+ ' and was predicted as ' + prediction + '\n')
 		results_txt.write('\n\nTime: ' + elapsed_time)
+	logging.debug('Testing elapsed time:', elapsed_time)
+
