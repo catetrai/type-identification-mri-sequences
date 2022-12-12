@@ -101,7 +101,7 @@ if __name__ == '__main__':
 			predicted_label = classes[predicted.cpu().numpy()[0]]
 
 			# Actual script output to stdout
-			print(f"{path}\t{predicted_label}")
+			print(f"{path[0]}\t{predicted_label}")
 			
 			if predicted != label.cpu():
 				wrong_predictions.append((path[0], classes[label.numpy()[0]], classes[predicted.cpu().numpy()[0]]))
