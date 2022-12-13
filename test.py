@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
 			# Actual script output to stdout
 			results_all[path[0]] = {"prediction": predicted_label}
-			logging.debug(result)
+			logging.debug(results_all[path[0]])
 			
 			if predicted != label.cpu():
 				wrong_predictions.append((path[0], classes[label.numpy()[0]], classes[predicted.cpu().numpy()[0]]))
