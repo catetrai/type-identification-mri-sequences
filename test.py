@@ -50,7 +50,8 @@ if __name__ == '__main__':
 
 	if args.test_data_path:
 		# Read list of directory paths from TXT file
-		test_data_path = list(args.test_data_path)
+		test_data_path = [line.rstrip("\n") for line in
+						  args.test_data_path.readlines()]
 	else:
 		test_data_path = args.series_paths
 
