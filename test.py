@@ -5,6 +5,7 @@ import argparse
 import numpy
 import random
 import time
+import json
 
 import torch
 import torch.utils.data as data
@@ -78,6 +79,8 @@ if __name__ == '__main__':
 	actual_classes = []
 	predicted_classes = []
 	wrong_predictions = []
+
+	results_all = []
 	with torch.no_grad():
 		for i, (pixel_data, label, path) in enumerate(test_loader):
 			label_as_num = label.numpy()[0]
@@ -97,12 +100,17 @@ if __name__ == '__main__':
 			predicted_label = classes[predicted.cpu().numpy()[0]]
 
 			# Actual script output to stdout
-			print(f"{path[0]}\t{predicted_label}")
+			result = {"series_path": path[0], "prediction": predicted_label}
+			results_all.append(result)
+			logging.debug(result)
 			
 			if predicted != label.cpu():
 				wrong_predictions.append((path[0], classes[label.numpy()[0]], classes[predicted.cpu().numpy()[0]]))
 				
 			logging.debug('Tested %s of %s files', i + 1, n_test_files)
+
+	# Actual script output to stdout
+	print(json.dumps(results_all))
 
 	#time
 	end_time = time.time()
