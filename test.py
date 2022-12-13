@@ -80,7 +80,7 @@ if __name__ == '__main__':
 	predicted_classes = []
 	wrong_predictions = []
 
-	results_all = []
+	results_all = {}
 	with torch.no_grad():
 		for i, (pixel_data, label, path) in enumerate(test_loader):
 			label_as_num = label.numpy()[0]
@@ -100,8 +100,7 @@ if __name__ == '__main__':
 			predicted_label = classes[predicted.cpu().numpy()[0]]
 
 			# Actual script output to stdout
-			result = {"series_path": path[0], "prediction": predicted_label}
-			results_all.append(result)
+			results_all[path[0]] = {"prediction": predicted_label}
 			logging.debug(result)
 			
 			if predicted != label.cpu():
