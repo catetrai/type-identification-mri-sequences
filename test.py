@@ -16,8 +16,14 @@ from MedicalDataset import MedicalDataset
 
 def parse_args():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-t', dest='test_data_path', nargs="+", required=True,
-		help = 'Paths to directories containing DICOM files to be tested.')
+	path_args_group = parser.add_mutually_exclusive_group(required=True)
+	path_args_group.add_argument('-t', dest='test_data_path',
+		type = argparse.FileType("r", encoding="utf-8"),
+		help = 'Txt file listing directory paths containing DICOM '
+			   'files to be tested (one path per line).')
+	path_args_group.add_argument('--series-paths', nargs="+",
+		help = 'Paths to directories of DICOM series containing DICOM files '
+			   'to be tested.')
 	parser.add_argument('-m', dest='model_file', type = str, required = True,
 		help = 'Name of the trained model file.')
 	parser.add_argument('-sl', dest='slices', type = int, default = 10,
@@ -41,7 +47,13 @@ def fix_random_seeds():
 
 if __name__ == '__main__':
 	args = parse_args()
-	test_data_path = args.test_data_path
+
+	if args.test_data_path:
+		# Read list of directory paths from TXT file
+		test_data_path = list(args.test_data_path)
+	else:
+		test_data_path = args.series_paths
+
 	model_file = args.model_file
 	n_slices = args.slices
 	tridim = args.tridim
