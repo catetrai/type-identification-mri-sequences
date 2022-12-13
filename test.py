@@ -68,7 +68,10 @@ if __name__ == '__main__':
 
 	fix_random_seeds()
 	
-	test_set = MedicalDataset(test_data_path, min_slices = n_slices, consider_other_class = consider_other_class, test = True)
+	test_set = MedicalDataset(
+		test_data_path, min_slices = n_slices,
+		consider_other_class = consider_other_class, test = True,
+		debug=args.debug)
 	test_loader = data.DataLoader(test_set, num_workers = 8, pin_memory = True)
 	#test_loader = data.DataLoader(test_set, pin_memory = True)
 	

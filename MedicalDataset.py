@@ -15,7 +15,7 @@ from time_util import time_format
 
 class MedicalDataset(Dataset):
     def __init__(self, image_paths, min_slices = 10, consider_other_class =
-    True, test = False):
+    True, test = False, debug=False):
         self.images = image_paths
         self.min_slices = min_slices
         self.consider_other_class = consider_other_class
@@ -24,6 +24,8 @@ class MedicalDataset(Dataset):
         if not self.consider_other_class:
             logging.debug('Actually loaded:', self.__len__(),
                           '("Other" class discarded)')
+        # Display warnings from ITK image reader only if debug is enabled
+        sitk.ProcessObject_SetGlobalWarningDisplay(debug)
     
     def load_data(self):
         data = []
